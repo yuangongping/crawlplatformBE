@@ -17,6 +17,7 @@ from flask_login import LoginManager
 app = Flask(__name__)
 app.config.from_object(config)
 # 允许跨域请求
+<<<<<<< HEAD
 cors = CORS(app, resources=r'/*', supports_credentials=True)
 # cas = CAS(app)
 '''
@@ -30,6 +31,10 @@ cors = CORS(app, resources=r'/*', supports_credentials=True)
 # 显示中文
 app.config['JSON_AS_ASCII'] = False
 
+=======
+CORS(app, resources=r'/*')
+cors = CORS(app, supports_credentials=True)
+>>>>>>> 89fb85c99a8607dd24a3a92607ca7b7f7467a1ca
 login_manager = LoginManager()  # 初始化flask_login
 login_manager.session_protection = 'strong'  # 设置登录安全级别
 login_manager.login_view = 'login'  # 指定了未登录时跳转的页面
@@ -124,9 +129,12 @@ from SpiderKeeper.app.projects.api import api_project_bp
 from SpiderKeeper.app.spider.api import api_spider_bp
 from SpiderKeeper.app.schedulers.api import api_schedulers_bp
 from SpiderKeeper.app.param_config.api import api_machine_bp
+<<<<<<< HEAD
 from SpiderKeeper.app.visual.api import api_visual_bp
 from SpiderKeeper.app.log_manage.api import api_log_bp
 
+=======
+>>>>>>> 89fb85c99a8607dd24a3a92607ca7b7f7467a1ca
 
 app.register_blueprint(api_spider_bp)
 app.register_blueprint(api_user_bp)

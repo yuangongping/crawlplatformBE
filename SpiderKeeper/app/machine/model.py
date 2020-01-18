@@ -11,10 +11,6 @@ class Serversmachine(Base):
 
     def to_dict(self):
         return dict(
-<<<<<<< HEAD
-            id=self.id,
-=======
->>>>>>> 89fb85c99a8607dd24a3a92607ca7b7f7467a1ca
             server_ip=self.server_ip,
             server_status=self.server_status,
             is_master=self.is_master
@@ -35,42 +31,6 @@ class Developer(Base):
             developer_status=self.developer_status,
         )
 
-<<<<<<< HEAD
-# class CiteProject(Base):
-#     """
-#     需求
-#     """
-#     name = db.Column(db.String(50), unique=True)
-#
-#
-# class ThemeProject(Base):
-#     """
-#     主题
-#     """
-#     name = db.Column(db.String(50), unique=True)
-#
-#
-# class IndustryProject(Base):
-#     """"
-#     行业
-#     """
-#     name = db.Column(db.String(50), unique=True)
-#
-#
-# class DeveloperProject(Base):
-#     name = db.Column(db.String(50), unique=True)
-#
-#
-# class TagProjectShip(Base):
-#     """
-#     工程与标签的关系
-#     """
-#     project_name = db.Column(db.String(50), unique=True)
-#     developer_name = db.Column(db.String(50))
-#     cite_name = db.Column(db.String(50))
-#     theme_name = db.Column(db.String(50))
-#     industry_name = db.Column(db.String(50))
-=======
 class CiteProject(Base):
     """
     需求
@@ -105,5 +65,4 @@ class TagProjectShip(Base):
     cite_name = db.Column(db.String(50))
     theme_name = db.Column(db.String(50))
     industry_name = db.Column(db.String(50))
->>>>>>> 89fb85c99a8607dd24a3a92607ca7b7f7467a1ca
 

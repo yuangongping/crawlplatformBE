@@ -40,31 +40,33 @@ def get_all_spiders_info():
     # 遍历实例数据库, 获取爬虫信息
     page_index = int(request.args.get('pageIndex', 1))
     page_size = int(request.args.get('pageSize', 12))
+    projects = Project.query.order_by(Project.date_created.desc()).paginate(page_index, page_size, False).items
     total_num = 0
-    job_executions = JobExecution.query.order_by(JobExecution.end_time).paginate(page_index, page_size, False).items
-    for job in job_executions:
-        _status = job_executions[-1].running_status
-        # 状态信息格式转变
-        status = switcher.get(_status, "CANCELED")
-        # 获取实例的上一次运行时间
-        last_run_time = job_executions[-1].end_time
-        service_job_execution_id = job_executions[-1].service_job_execution_id
-        _dict = dict(
-            project_id=project.id,
-            project_name=project.project_name,
-            project_alias=project.project_alias,
-            project_cate=project.project_cate,
-            spider_id=SpiderInstance.query.filter_by(project_id=project.id).first().id,
-            spider_name=SpiderInstance.query.filter_by(project_id=project.id).first().spider_name,
-            spider_alias='',
-            last_run_status=status,
-            last_run_time=str(last_run_time).split('.')[0],
-            run_type='',
-            job_exec_id=service_job_execution_id,
-            is_msd=project.is_msd
-        )
-
-        datas['data'].append(_dict)
+    for project in projects:
+        job_executions = JobExecution.query.filter_by(project_id=project.id).order_by(JobExecution.end_time).all()
+        if job_executions:
+            _status = job_executions[-1].running_status
+            # 状态信息格式转变
+            status = switcher.get(_status, "CANCELED")
+            # 获取实例的上一次运行时间
+            last_run_time = job_executions[-1].end_time
+            service_job_execution_id = job_executions[-1].service_job_execution_id
+            _dict = dict(
+                project_id=project.id,
+                project_name=project.project_name,
+                project_alias=project.project_alias,
+                project_cate=project.project_cate,
+                spider_id=SpiderInstance.query.filter_by(project_id=project.id).first().id,
+                spider_name=SpiderInstance.query.filter_by(project_id=project.id).first().spider_name,
+                spider_alias='',
+                last_run_status=status,
+                last_run_time=str(last_run_time).split('.')[0],
+                run_type='',
+                job_exec_id=service_job_execution_id,
+                is_msd=project.is_msd
+            )
+            total_num += 1
+            datas['data'].append(_dict)
     datas['total_num'] = total_num
     return json.dumps({"code": 200, 'data': datas})
 

@@ -82,7 +82,3 @@ def del_scheduler():
     except:
         return json.dumps({"code": 500, "status": "error", "msg": "删除错误"})
 
-
-
-
-

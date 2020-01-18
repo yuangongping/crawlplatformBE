@@ -94,6 +94,3 @@ class SpiderInstance(Base):
                                'spider_avg_runtime': avg_runtime_list.get(spider.spider_name)
                                }))
         return res
-
-
-
