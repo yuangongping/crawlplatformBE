@@ -7,10 +7,10 @@ from scrapyd_api import ScrapydAPI
 
 # 自定义模块
 from SpiderKeeper.app.proxy.spiderctrl import SpiderServiceProxy
-from SpiderKeeper.app.spider.model import SpiderStatus, Project, SpiderInstance
+from SpiderKeeper.app.spider.model import SpiderInstance
+from SpiderKeeper.app.schedulers.model import SpiderStatus
+from SpiderKeeper.app.projects.model import Project
 
-from SpiderKeeper.app.util.http import request
-import requests
 
 
 class ScrapydProxy(SpiderServiceProxy):
@@ -121,7 +121,11 @@ class ScrapydProxy(SpiderServiceProxy):
         :param spider_name: 爬虫名称
         :return: 返回启动的爬虫的id, 启动不成功, 返回None
         """
-        data = self.scrapyd_api.schedule(project_name, spider_name)
+        data = self.scrapyd_api.schedule(
+            project_name,
+            spider_name,
+            pro_name=project_name
+        )
         return data if data else None
 
     def cancel_spider(self, project_name, job_id):

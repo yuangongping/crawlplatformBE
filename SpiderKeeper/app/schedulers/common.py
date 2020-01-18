@@ -1,8 +1,10 @@
 import time
 # agent是一个SpiderAgent的实例化对象
 # scheduler是Apscheduler的实例化对象
-from SpiderKeeper.app import scheduler, app, agent
-from SpiderKeeper.app.spider.model import Project, JobInstance, SpiderInstance
+from SpiderKeeper.app import scheduler, app, agent, db
+from SpiderKeeper.app.spider.model import SpiderInstance
+from SpiderKeeper.app.schedulers.model import JobInstance
+from SpiderKeeper.app.projects.model import Project
 
 
 def sync_job_execution_status_job():
@@ -22,7 +24,9 @@ def sync_spiders():
     :return:
     """
     # 遍历所有的工程
-    for project in Project.query.all():
+    db.session.commit()
+    allprojects = db.session.query(Project).all()
+    for project in allprojects:
         # 通过工程名获取scrapyd上的爬虫列表
         spider_instance_list = agent.get_spider_list(project)
         SpiderInstance.update_spider_instances(project.id, spider_instance_list)
@@ -67,11 +71,11 @@ def reload_runnable_spider_job_execution():
                               args=(job_instance.id,),
                               trigger='cron',
                               id=job_id,
-                              minute=job_instance.cron_minutes,
-                              hour=job_instance.cron_hour,
-                              day=job_instance.cron_day_of_month,
+                              minute='{}'.format(job_instance.cron_minutes),
+                              hour='{}'.format(job_instance.cron_hour),
+                              day='{}'.format(job_instance.cron_day_of_month),
                               day_of_week=job_instance.cron_day_of_week,
-                              month=job_instance.cron_month,
+                              month='{}'.format(job_instance.cron_month),
                               second=0,
                               max_instances=999,
                               misfire_grace_time=60 * 60,

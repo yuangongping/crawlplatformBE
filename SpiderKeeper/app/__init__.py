@@ -1,8 +1,9 @@
 # Import flask and template operators
 import logging
+import os
 import traceback
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask import jsonify
 from flask_basicauth import BasicAuth
 from flask_sqlalchemy import SQLAlchemy
@@ -10,14 +11,24 @@ from werkzeug.exceptions import HTTPException
 from flask_cors import CORS
 from SpiderKeeper import config
 from flask_login import LoginManager
-import datetime
+# from SpiderKeeper.app.flask_CAS import CAS
+
 
 app = Flask(__name__)
-# Configurations
 app.config.from_object(config)
 # 允许跨域请求
-CORS(app, resources=r'/*')
-cors = CORS(app, supports_credentials=True)
+cors = CORS(app, resources=r'/*', supports_credentials=True)
+# cas = CAS(app)
+'''
+统一认证
+'''
+# app.config['CAS_SERVER'] = 'http://172.10.10.232:8088'
+# app.config['CAS_LOGIN_ROUTE'] = '/cas/login'
+# app.config['CAS_AFTER_LOGIN'] = '/'
+# app.config['SECRET_KEY'] = '123456'
+
+# 显示中文
+app.config['JSON_AS_ASCII'] = False
 
 login_manager = LoginManager()  # 初始化flask_login
 login_manager.session_protection = 'strong'  # 设置登录安全级别
@@ -76,8 +87,11 @@ def handle_error(e):
         'data': None
     })
 
+
 # 创建数据库
 from SpiderKeeper.app.spider.model import *
+from SpiderKeeper.app.projects.model import *
+from SpiderKeeper.app.schedulers.model import *
 
 
 def init_database():
@@ -90,7 +104,7 @@ def init_database():
 # SpiderAgent 爬虫代理服务类, 其实也就是把多个爬虫服务代理的实例统一做一遍轮询操作
 from SpiderKeeper.app.proxy.spiderctrl import SpiderAgent
 from SpiderKeeper.app.proxy.contrib.scrapy import ScrapydProxy
-from SpiderKeeper.app.machine.model import Serversmachine
+from SpiderKeeper.app.param_config.model import Serversmachine
 
 agent = SpiderAgent()  # 实例化一个蜘蛛
 
@@ -106,15 +120,29 @@ def regist_server():
 # ----------------- 注册各个模块的蓝本 -----------------#
 from SpiderKeeper.app.spider.controller import ctrl_spider_bp
 from SpiderKeeper.app.user.api import api_user_bp
+from SpiderKeeper.app.projects.api import api_project_bp
 from SpiderKeeper.app.spider.api import api_spider_bp
 from SpiderKeeper.app.schedulers.api import api_schedulers_bp
-from SpiderKeeper.app.machine.api import api_machine_bp
+from SpiderKeeper.app.param_config.api import api_machine_bp
+from SpiderKeeper.app.visual.api import api_visual_bp
+from SpiderKeeper.app.log_manage.api import api_log_bp
+
 
 app.register_blueprint(api_spider_bp)
 app.register_blueprint(api_user_bp)
+app.register_blueprint(api_project_bp)
 app.register_blueprint(api_schedulers_bp)
 app.register_blueprint(ctrl_spider_bp)
 app.register_blueprint(api_machine_bp)
+app.register_blueprint(api_visual_bp)
+app.register_blueprint(api_log_bp)
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='favicon.icon')
+
 
 # ----------------- 开启异步任务状态调度 -----------------#
 from SpiderKeeper.app.schedulers.common import sync_job_execution_status_job, sync_spiders, \

@@ -18,12 +18,13 @@ def main():
         BASIC_AUTH_PASSWORD=opts.password,
         NO_AUTH=opts.no_auth
     ))
+
     if opts.verbose:
         app.logger.setLevel(logging.DEBUG)
     initialize()
     app.logger.info("SpiderKeeper startd on %s:%s username:%s/password:%s with %s servers:%s" % (
         opts.host, opts.port, opts.username, opts.password, opts.server_type, ','.join(app.config.get('SERVERS', []))))
-    app.run(host=opts.host, port=opts.port, use_reloader=False, threaded=True)
+    app.run(host=opts.host, port=opts.port, use_reloader=False, threaded=True, debug=True)
 
 
 def parse_opts(config):

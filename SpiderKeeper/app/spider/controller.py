@@ -1,22 +1,13 @@
 import datetime
-import os
-import tempfile
-import requests
-from flask import Blueprint, request
-from flask import flash
-from flask import redirect
-from flask import render_template
+from flask import Blueprint
 from flask import session
-from werkzeug.utils import secure_filename
-from SpiderKeeper.app import db, agent, app
-from SpiderKeeper.app.spider.model import JobInstance, Project, JobExecution, SpiderInstance, JobRunType
+from SpiderKeeper.app import agent, app
+from SpiderKeeper.app.spider.model import SpiderInstance
+from SpiderKeeper.app.projects.model import Project
 
 # 蓝本的注册
 ctrl_spider_bp = Blueprint('spiderctrl', __name__)
 
-"""
-========= Router =========
-"""
 
 @app.context_processor
 def inject_common():
@@ -66,13 +57,4 @@ def utility_processor():
         if total_seconds / 3600 == 0:
             return '%s m' % int(total_seconds / 60)
         return '%s h %s m' % (int(total_seconds / 3600), int((total_seconds % 3600) / 60))
-
     return dict(timedelta=timedelta, readable_time=readable_time)
-
-
-#@app.route("/")
-#def index():
-#    project = Project.query.first()
-#    if project:
-#        return redirect("/project/%s/job/dashboard" % project.id, code=302)
-#    return redirect("/project/manage", code=302)
