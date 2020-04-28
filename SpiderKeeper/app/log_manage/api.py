@@ -12,25 +12,6 @@ es_connection = Elasticsearch(hosts=['http://172.10.10.31:9200/'])
 
 @app.route("/logmanage", methods=['get'])
 def log_manage():
-    '''
-    功能：从Elasticsearch中获取日志数据
-    :return: {"code": 200,
-                  "data": {
-                        'project_group': {
-                                'key':'other_agent', 'doc_count':'3405', 'key':'china_standard', 'doc_count':'123456'
-                        },
-                        'total': 34205,
-                        'messages': {
-                                'path': '/home/python/run_env/scrapyd/logs/26f688ce0b4a11e9907a0cda411d4f43.log',
-                                'loglevel': 'ERROR',
-                                'messages': ' Error processing {\'_id\': \'154607611718500000\.......',
-                                'time': '2018-12-29',
-                                'project_name': 'china_standard',
-                                'type': '172.10.10.185'
-                        }
-                  }
-    }
-    '''
     try:
         # 操作elasticsearch数据库的执行语句
         # 主要是按照项目名称分组计数并查询所有的错误日志
@@ -44,7 +25,7 @@ def log_manage():
             "aggs": {  # 分组聚合
                 "project_group": {
                     "terms": {
-                        "field": "project_name"
+                        "field": "project_name.keyword"
                     }
                 }
             }
@@ -68,6 +49,5 @@ def log_manage():
             messages=messages
         )
         return json.dumps({"code": 200, "data": data_dict})
-
     except Exception as e:
         return json.dumps({"code": 500, "status": "error", "msg": "日志信息获取出错"})

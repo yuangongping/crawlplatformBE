@@ -144,7 +144,7 @@ def week_sum():
         week_data = DataCounts.query.with_entities(func.date_format(DataCounts.date_created, '%m-%d'),
                                                    func.sum(DataCounts.number)).\
             filter(func.date_format(DataCounts.date_created, '%Y-%m-%d') > delta_days.strftime('%Y-%m-%d')).\
-            group_by(DataCounts.date_modified).order_by(func.date_format(DataCounts.date_created, '%Y-%m-%d')).all()
+            group_by(DataCounts.date_created).order_by(func.date_format(DataCounts.date_created, '%Y-%m-%d')).all()
 
         data_dict = dict(
                     week_data=week_data)
